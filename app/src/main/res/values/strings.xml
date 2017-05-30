@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">ScientificNoon</string>
+    <string name="app_name">نون العلمية</string>
+    <string name="drawer_open">فتح</string>
+    <string name="drawer_close">إغلاق</string>
 </resources>
