@@ -29,8 +29,8 @@ public class PostsRemoteDataSource implements PostsDataSource {
     @Override
     public void getPosts(int postsPerPage, int page, final Callbacks.ListCallback<Post> callback) {
         postsService.getPosts(page, postsPerPage)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<Post>>() {
                     @Override
                     public void onCompleted() {
@@ -52,8 +52,8 @@ public class PostsRemoteDataSource implements PostsDataSource {
     @Override
     public void getPost(int postId, final Callbacks.Callback<Post> callback) {
         postsService.getPost(postId)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Post>() {
                     @Override
                     public void onCompleted() {
@@ -75,8 +75,8 @@ public class PostsRemoteDataSource implements PostsDataSource {
     @Override
     public void getPostsByCategory(int catId, int postsPerPage, int page, final Callbacks.ListCallback<Post> callback) {
         postsService.getPostsByCategory(catId, page, postsPerPage)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<Post>>() {
                     @Override
                     public void onCompleted() {
@@ -98,8 +98,8 @@ public class PostsRemoteDataSource implements PostsDataSource {
     @Override
     public void getPostsByUser(int userId, int postsPerPage, int page, final Callbacks.ListCallback<Post> callback) {
         postsService.getPostsByUser(userId, page, postsPerPage)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<Post>>() {
                     @Override
                     public void onCompleted() {
