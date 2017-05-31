@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="app_bar_elevation">4dp</dimen>
+
+    <dimen name="title_padding">16dp</dimen>
+
+    <dimen name="categories_padding">16dp</dimen>
+
+    <dimen name="category_item_elevation">2dp</dimen>
+    <dimen name="category_item_padding_horizontal">16dp</dimen>
+    <dimen name="category_item_padding_vertical">8dp</dimen>
+    <dimen name="category_margin">8dp</dimen>
 </resources>

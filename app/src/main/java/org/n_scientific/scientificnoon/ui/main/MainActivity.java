@@ -1,10 +1,7 @@
 package org.n_scientific.scientificnoon.ui.main;
 
 import android.content.res.Configuration;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import org.n_scientific.scientificnoon.MyApplication;
 import org.n_scientific.scientificnoon.R;
@@ -18,6 +15,19 @@ import javax.inject.Inject;
 public class MainActivity extends BaseActivity implements MainContract.View {
 
     private static final String TAG = "MainActivity";
+
+    // Mode of display: Recent Posts, By User, By Category..
+    public static final String MODE_KEY = "mode";
+
+    public static final int RECENT_POSTS_MODE = 0;
+    public static final int CATEGORIES_MODE = 1;
+    public static final int USER_MODE = 2;
+
+    // Category to be displayed..
+    public static final String CATEGORY_KEY = "category";
+    // User to display his posts..
+    public static final String USER_KEY = "user";
+
     @Inject
     PostsRemoteDataSource postsRemoteDataSource;
 
