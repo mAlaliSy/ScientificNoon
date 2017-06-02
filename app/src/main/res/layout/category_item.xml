@@ -12,7 +12,7 @@
     android:paddingRight="@dimen/category_item_padding_horizontal"
     android:paddingTop="@dimen/category_item_padding_vertical">
 
-    <TextView
+    <org.n_scientific.scientificnoon.ui.views.NoonTextView
         android:id="@+id/categoryName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
