@@ -6,16 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
 
 import org.n_scientific.scientificnoon.R;
 import org.n_scientific.scientificnoon.data.pojo.Category;
 import org.n_scientific.scientificnoon.ui.main.MainActivity;
 
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by mohammad on 31/05/17.
@@ -40,7 +37,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
 
     @Override
     public void onBindViewHolder(CategoryHolder categoryHolder, int i) {
-        categoryHolder.categoryName.setText(data.get(i).getName());
+        categoryHolder.button.setText(data.get(i).getName());
     }
 
     @Override
@@ -50,13 +47,11 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
 
     public class CategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.categoryName)
-        TextView categoryName;
+        Button button;
 
         public CategoryHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
-
+            button = (Button) itemView;
             itemView.setOnClickListener(this);
         }
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -20,8 +21,8 @@ public interface CategoriesService {
     @GET("categories/{id}")
     Observable<Category> getCategory(@Path("id") int id);
 
-    @GET("categories?parent={parent}")
-    Observable<List<Category>> getCategoriesByParent(@Path("parent") int parentId);
+    @GET("categories")
+    Observable<List<Category>> getCategoriesByParent(@Query("parent") int parentId);
 
 
 }

@@ -4,9 +4,8 @@ import org.n_scientific.scientificnoon.data.pojo.Comment;
 
 import java.util.List;
 
-
 import retrofit2.http.GET;
-import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -15,8 +14,8 @@ import rx.Observable;
 
 public interface CommentsService {
 
-    @GET("comments?post={post_id}&page={page}&per_page={per_page}")
-    Observable<List<Comment>> getComments(@Path("post_id") int postId, @Path("page") int page, @Path("per_page") int perPage);
+    @GET("comments")
+    Observable<List<Comment>> getComments(@Query("post") int postId, @Query("page") int page, @Query("per_page") int perPage);
 
 
 }

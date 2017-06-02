@@ -71,7 +71,7 @@ public class Comment implements Serializable {
     }
 
     // Represent Content JSON Object
-    class Content implements Serializable{
+    public class Content implements Serializable{
         @SerializedName("rendered")
         @Expose
         private String content;

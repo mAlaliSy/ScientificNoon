@@ -3,7 +3,7 @@ package org.n_scientific.scientificnoon.data.remote;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.n_scientific.scientificnoon.AppConstants;
+import org.n_scientific.scientificnoon.Config;
 import org.n_scientific.scientificnoon.data.remote.services.CategoriesService;
 import org.n_scientific.scientificnoon.data.remote.services.CommentsService;
 import org.n_scientific.scientificnoon.data.remote.services.PostsService;
@@ -32,7 +32,7 @@ public class NetworkModule {
         return new Retrofit.Builder()
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .baseUrl(AppConstants.API_URL)
+                .baseUrl(Config.API_URL)
                 .build();
     }
 
