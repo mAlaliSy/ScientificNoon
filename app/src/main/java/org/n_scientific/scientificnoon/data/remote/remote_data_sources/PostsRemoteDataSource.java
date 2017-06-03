@@ -117,4 +117,29 @@ public class PostsRemoteDataSource implements PostsDataSource {
                     }
                 });
     }
+
+    @Override
+    public void search(String query, int postsPerPage, int page, final Callbacks.ListCallback<Post> callback) {
+        postsService.search(query, postsPerPage, page)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<Post>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        callback.onError(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<Post> posts) {
+                        callback.onLoaded(posts);
+                    }
+                });
+    }
+
+
 }

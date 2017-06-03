@@ -27,4 +27,7 @@ public interface PostsService {
     @GET("posts/{id}")
     Observable<Post> getPost(@Path("id") int id);
 
+    @GET("posts")
+    Observable<List<Post>> search(@Query("search") String search, @Query("per_page") int perPage, @Query("page") int page);
+
 }
