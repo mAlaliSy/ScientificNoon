@@ -1,4 +1,4 @@
-package org.n_scientific.scientificnoon.ui;
+package org.n_scientific.scientificnoon.ui.adapters;
 
 import android.content.Context;
 import android.content.Intent;

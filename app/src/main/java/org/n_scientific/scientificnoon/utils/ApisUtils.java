@@ -21,6 +21,10 @@ public final class ApisUtils {
         return id;
     }
 
+    public static String getYoutubeVideoKey(String url) {
+        return url.substring(url.lastIndexOf('/') + 1, url.indexOf('?'));
+    }
+
     public static String getSoundCloudStreamingUrl(String id) {
         return String.format("https://api.soundcloud.com/tracks/%s/stream?client_id=%s",
                 id, Config.SOUNDCLOUD_API_KEY);

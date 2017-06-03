@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/categoryName"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/category_margin"
+    style="@style/Widget.AppCompat.Button.Small"
+    android:layout_margin="8dp"
     android:background="@drawable/category_background"
-    android:clickable="true"
-    android:elevation="@dimen/category_item_elevation"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/category_item_padding_vertical"
-    android:paddingLeft="@dimen/category_item_padding_horizontal"
-    android:paddingRight="@dimen/category_item_padding_horizontal"
-    android:paddingTop="@dimen/category_item_padding_vertical">
-
-    <org.n_scientific.scientificnoon.ui.views.NoonTextView
-        android:id="@+id/categoryName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textColor="@android:color/white" />
-</LinearLayout>
+    android:minHeight="0dp"
+    android:minWidth="0dp"
+    android:paddingBottom="6dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="6dp"
+    android:text="TextView"
+    android:textColor="@android:color/white"
+    android:textSize="16sp" />

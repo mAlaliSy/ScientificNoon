@@ -2,7 +2,9 @@ package org.n_scientific.scientificnoon;
 
 import android.app.Application;
 
-
+import org.n_scientific.scientificnoon.data.local.DaggerLocalDataSourceComponent;
+import org.n_scientific.scientificnoon.data.local.LocalDataSourceComponent;
+import org.n_scientific.scientificnoon.data.local.LocalDataSourceProvider;
 import org.n_scientific.scientificnoon.data.remote.DaggerNetworkComponent;
 import org.n_scientific.scientificnoon.data.remote.DaggerRemoteDataSourceComponent;
 import org.n_scientific.scientificnoon.data.remote.NetworkComponent;
@@ -18,13 +20,14 @@ public class MyApplication extends Application {
 
     NetworkComponent networkComponent;
     RemoteDataSourceComponent remoteDataSourceComponent;
+    LocalDataSourceComponent localDataSourceComponent;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        NetworkModule networkModule = new NetworkModule();
+        NetworkModule networkModule = new NetworkModule(this);
 
         networkComponent = DaggerNetworkComponent
                 .builder()
@@ -35,6 +38,10 @@ public class MyApplication extends Application {
                 .builder()
                 .networkModule(networkModule)
                 .remoteDataSourceModule(new RemoteDataSourceModule())
+                .build();
+        localDataSourceComponent = DaggerLocalDataSourceComponent
+                .builder()
+                .localDataSourceProvider(new LocalDataSourceProvider(this))
                 .build();
     }
 
@@ -47,4 +54,7 @@ public class MyApplication extends Application {
         return remoteDataSourceComponent;
     }
 
+    public LocalDataSourceComponent getLocalDataSourceComponent() {
+        return localDataSourceComponent;
+    }
 }

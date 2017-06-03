@@ -2,4 +2,17 @@
     <string name="app_name">نون العلمية</string>
     <string name="drawer_open">فتح</string>
     <string name="drawer_close">إغلاق</string>
+    <string name="youtube_error">حدث خطأ أثنائ تهيئة الفيديو!</string>
+    <string name="sound_error">حدث خطأ أثناء تحميل الملف الصوتي!</string>
+    <string name="open_in_browser">فتح في المتصفح</string>
+    <string name="share">مشاركة</string>
+    <string name="site_name">مجموعة نون العلمية</string>
+
+
+    <string name="comments">التعليقات</string>
+    <string name="fontSize">حجم الخط :</string>
+    <string name="maxFontSizeError">هذا أقصى حجم ممكن!</string>
+    <string name="minFontSizeError">هذا أقل حجم ممكن!</string>
+    <string name="addToFavorite">إضافة للمفضلة</string>
+    <string name="no_comments">لا توجد تعليقات</string>
 </resources>

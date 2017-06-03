@@ -23,19 +23,15 @@ public class Comment implements Serializable {
     @Expose
     private String status;
 
+    @SerializedName("date")
+    @Expose
+    private String date;
 
     @SerializedName("content")
     @Expose
     private Content content;
 
     public Comment() {
-    }
-
-    public Comment(int id, String authorName, String status, Content content) {
-        this.id = id;
-        this.authorName = authorName;
-        this.status = status;
-        this.content = content;
     }
 
     public Content getContent() {
@@ -69,6 +65,17 @@ public class Comment implements Serializable {
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
     }
+
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+
 
     // Represent Content JSON Object
     public class Content implements Serializable{

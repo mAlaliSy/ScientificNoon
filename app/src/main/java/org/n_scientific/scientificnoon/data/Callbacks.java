@@ -8,16 +8,17 @@ import java.util.List;
 
 public interface Callbacks {
     interface ListCallback<T>{
-        void onLoaded(List<T> categories);
+        void onLoaded(List<T> results);
         void onError(String message);
     }
 
     interface Callback<T>{
 
-        void onLoaded(T post);
+        void onLoaded(T result);
 
         void onError(String message);
 
     }
+
 
 }

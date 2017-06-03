@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6A1B9A</color>
+    <color name="colorPrimary">#6a1b9a</color>
     <color name="colorPrimaryDark">#38006B</color>
     <color name="colorAccent">#FFA000</color>
 
     <color name="colorAccentDark">#f57c00</color>
 
-    <color name="overlay">#1e000000</color>
+    <color name="overlay">#65000000</color>
+    <color name="comment_background">#eaeaea</color>
+    <color name="dividerColor">#30000000</color>
 </resources>

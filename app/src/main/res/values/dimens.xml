@@ -10,4 +10,7 @@
     <dimen name="category_item_padding_horizontal">16dp</dimen>
     <dimen name="category_item_padding_vertical">8dp</dimen>
     <dimen name="category_margin">8dp</dimen>
+    <dimen name="post_content_padding">16dp</dimen>
+    <dimen name="play_button_padding">8dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

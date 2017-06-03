@@ -2,6 +2,7 @@ package org.n_scientific.scientificnoon.ui.main;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 
 import org.n_scientific.scientificnoon.MyApplication;
 import org.n_scientific.scientificnoon.R;
@@ -38,6 +39,7 @@ public class MainActivity extends BaseActivity implements MainContract.View {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         // Change the language to Arabic => Use RTL instead of LTR..
         Locale locale = new Locale("ar");

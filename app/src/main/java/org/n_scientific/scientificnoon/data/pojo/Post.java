@@ -1,7 +1,12 @@
 package org.n_scientific.scientificnoon.data.pojo;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import org.n_scientific.scientificnoon.data.local.NoonSQLiteHelper;
 
 import java.io.Serializable;
 
@@ -51,16 +56,26 @@ public class Post implements Serializable {
     public Post() {
     }
 
-    public Post(int id, String date, String modified, String status, Content content, int authorId, int[] categories, String link, Title title) {
-        this.id = id;
-        this.date = date;
-        this.modified = modified;
-        this.status = status;
-        this.content = content;
-        this.authorId = authorId;
-        this.categories = categories;
-        this.link = link;
-        this.title = title;
+    public static Post fromCursor(Cursor cursor) {
+        Post post = new Post();
+
+        post.id = cursor.getInt(NoonSQLiteHelper.SQLiteContract.POST_ID_COLUMN_INDEX);
+        post.title = new Title(cursor.getString(NoonSQLiteHelper.SQLiteContract.TITLE_COLUMN_INDEX));
+        post.content = new Content(cursor.getString(NoonSQLiteHelper.SQLiteContract.CONTENT_COLUMN_INDEX));
+        post.link = cursor.getString(NoonSQLiteHelper.SQLiteContract.LINKE_COLUMN_INDEX);
+        post.date = cursor.getString(NoonSQLiteHelper.SQLiteContract.DATE_COLUMN_INDEX);
+
+        return post;
+    }
+
+    public ContentValues toContentValues() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NoonSQLiteHelper.SQLiteContract.POST_ID_COLUMN_NAME, id);
+        contentValues.put(NoonSQLiteHelper.SQLiteContract.TITLE_COLUMN_NAME, title.getTitle());
+        contentValues.put(NoonSQLiteHelper.SQLiteContract.CONTENT_COLUMN_NAME, content.getContent());
+        contentValues.put(NoonSQLiteHelper.SQLiteContract.LINK_COLUMN_NAME, link);
+        contentValues.put(NoonSQLiteHelper.SQLiteContract.DATE_COLUMN_NAME, date);
+        return contentValues;
     }
 
 
@@ -139,10 +154,17 @@ public class Post implements Serializable {
 
 
     // Represent Title JSON Object
-    public class Title implements Serializable {
+    public static class Title implements Serializable {
         @SerializedName("rendered")
         @Expose
         private String title;
+
+        public Title() {
+        }
+
+        public Title(String title) {
+            this.title = title;
+        }
 
         public String getTitle() {
             return title;
@@ -154,7 +176,7 @@ public class Post implements Serializable {
     }
 
     // Represent Content JSON Object
-    public class Content implements Serializable {
+    public static class Content implements Serializable {
         @SerializedName("rendered")
         @Expose
         private String content;
@@ -162,6 +184,13 @@ public class Post implements Serializable {
         @SerializedName("protected")
         @Expose
         private boolean isProtected;
+
+        public Content() {
+        }
+
+        public Content(String content) {
+            this.content = content;
+        }
 
         public String getContent() {
             return content;

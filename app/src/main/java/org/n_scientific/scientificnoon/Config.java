@@ -20,8 +20,13 @@ public final class Config { // Avoid extending container class..
     public static final String SOUNDCLOUD_API_KEY = "cd9d2e5604410d714e32642a4ec0eed4";
 
 
-    public static final String FETCHED_POST_DATE_PATTERN = "yyyy-MM-dd-HH:mm:ss";
-    public static final String POST_DATE_PATTERN = "dd/MM/yyyy";
+    public static final String FETCHED_POST_COMMENT_DATE_PATTERN = "yyyy-MM-dd-HH:mm:ss";
+    public static final String POST_COMMENT_DATE_PATTERN = "dd/MM/yyyy";
+    public static final String POST_COMMENT_DATE_PATTERN_NO_YEAR = "dd/MM";
+
+    public static final int MAX_FONT_SIZE = 23;
+    public static final int MIN_FONT_SIZE = 11;
+
 
 
 
