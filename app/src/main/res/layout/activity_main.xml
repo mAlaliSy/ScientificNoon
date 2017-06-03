@@ -31,8 +31,14 @@
         android:layout_gravity="right"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/header_view"
+        app:menu="@menu/navigation_view_menu">
 
-        />
+        <ProgressBar
+            android:id="@+id/categoriesProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>
 

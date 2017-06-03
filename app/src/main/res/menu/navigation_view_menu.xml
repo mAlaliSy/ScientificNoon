@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/categoriesItems"
+        android:orderInCategory="0">
+
+    </group>
+
+
+    <group
+        android:id="@+id/mainItems"
+        android:orderInCategory="1">
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/settings" />
+        <item
+            android:id="@+id/about"
+            android:icon="@drawable/ic_info"
+            android:title="@string/whoAreWe" />
+    </group>
+
+
+</menu>

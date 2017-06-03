@@ -15,4 +15,6 @@
     <string name="minFontSizeError">هذا أقل حجم ممكن!</string>
     <string name="addToFavorite">إضافة للمفضلة</string>
     <string name="no_comments">لا توجد تعليقات</string>
+    <string name="settings">الإعدادات</string>
+    <string name="whoAreWe">من نحن</string>
 </resources>

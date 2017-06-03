@@ -1,6 +1,8 @@
 package org.n_scientific.scientificnoon.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -8,6 +10,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.n_scientific.scientificnoon.MyApplication;
@@ -15,6 +20,8 @@ import org.n_scientific.scientificnoon.R;
 import org.n_scientific.scientificnoon.data.Callbacks;
 import org.n_scientific.scientificnoon.data.pojo.Category;
 import org.n_scientific.scientificnoon.data.remote.remote_data_sources.CategoriesRemoteDataSource;
+import org.n_scientific.scientificnoon.data.remote.remote_data_sources.PostsRemoteDataSource;
+import org.n_scientific.scientificnoon.ui.main.MainActivity;
 
 import java.util.List;
 
@@ -27,12 +34,14 @@ import butterknife.ButterKnife;
  * Created by mohammad on 29/05/17.
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements Callbacks.ListCallback<Category>, NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "BaseActivity";
     @Inject
     protected CategoriesRemoteDataSource catRemoteDataSource;
 
+    @Inject
+    protected PostsRemoteDataSource postsRemoteDataSource;
 
     @BindView(R.id.drawer_layout)
     protected DrawerLayout mDrawerLayout;
@@ -42,6 +51,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     protected Toolbar toolbar;
+
+    @BindView(R.id.categoriesProgressBar)
+    ProgressBar categoriesProgressBar;
+
+    List<Category> categories;
+
     private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
@@ -59,29 +74,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        loadMenuItems();
+        catRemoteDataSource.getCategories(this);
 
 
-    }
+        mNavigationView.setNavigationItemSelectedListener(this);
 
-    private void loadMenuItems() {
-        catRemoteDataSource.getCategories(new Callbacks.ListCallback<Category>() {
-            @Override
-            public void onLoaded(List<Category> categories) {
 
-                Menu menu = mNavigationView.getMenu();
-
-                for (Category category : categories) {
-                    menu.add(category.getName());
-                }
-
-            }
-
-            @Override
-            public void onError(String message) {
-                Toast.makeText(BaseActivity.this, message, Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
 
@@ -90,4 +88,31 @@ public abstract class BaseActivity extends AppCompatActivity {
     public abstract void injectDependencies();
 
 
+    @Override
+    public void onLoaded(List<Category> results) {
+        categoriesProgressBar.setVisibility(View.GONE);
+
+        BaseActivity.this.categories = results;
+        Menu menu = mNavigationView.getMenu();
+        for (int i = 0; i < categories.size(); i++) {
+            menu.add(R.id.categoriesItems, i, Menu.NONE, categories.get(i).getName());
+        }
+    }
+
+    @Override
+    public void onError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MainActivity.MODE_KEY, MainActivity.CATEGORIES_MODE);
+        intent.putExtra(MainActivity.CATEGORY_KEY, categories.get(menuItem.getItemId()));
+
+        startActivity(intent);
+
+        return false;
+    }
 }
