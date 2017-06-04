@@ -19,6 +19,19 @@
             android:id="@+id/about"
             android:icon="@drawable/ic_info"
             android:title="@string/whoAreWe" />
+        <item
+            android:id="@+id/twitter"
+            android:icon="@drawable/twitter"
+            android:title="@string/followUsOnTwitter" />
+        <item
+            android:id="@+id/youtube"
+            android:icon="@drawable/youtube"
+            android:title="@string/youtubeChanel" />
+        <item
+            android:id="@+id/soundcloud"
+            android:icon="@drawable/soundcloud"
+            android:title="@string/soundcloudAccount" />
+
     </group>
 
 

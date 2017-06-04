@@ -18,4 +18,7 @@
     <string name="settings">الإعدادات</string>
     <string name="whoAreWe">من نحن</string>
     <string name="logoText">نون العلمية\n لأن العلم يأتي أولاَ</string>
+    <string name="followUsOnTwitter">تابعنا على تويتر</string>
+    <string name="youtubeChanel">قناتنا على يوتيوب</string>
+    <string name="soundcloudAccount">حسابنا على SoundCloud</string>
 </resources>

@@ -27,6 +27,10 @@ public final class Config { // Avoid extending container class..
     public static final int MAX_FONT_SIZE = 23;
     public static final int MIN_FONT_SIZE = 11;
 
+    public static final String TWITTER_URL = "https://twitter.com/N_Scientific";
+    public static final String YOUTUBE_URL = "https://www.youtube.com/channel/UCGApGLFzrw_wJ45dQXzMMZw";
+    public static final String SOUNDCLOUD_URL = "https://soundcloud.com/n-scientific";
+
 
 
 

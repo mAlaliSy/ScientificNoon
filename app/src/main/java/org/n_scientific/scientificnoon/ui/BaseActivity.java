@@ -1,6 +1,7 @@
 package org.n_scientific.scientificnoon.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,12 +10,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.n_scientific.scientificnoon.Config;
 import org.n_scientific.scientificnoon.MyApplication;
 import org.n_scientific.scientificnoon.R;
 import org.n_scientific.scientificnoon.data.Callbacks;
@@ -109,6 +113,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
+
         switch (menuItem.getItemId()) {
             case R.id.settings:
 
@@ -116,13 +121,32 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
             case R.id.about:
 
                 break;
+            case R.id.twitter:
+                Intent twitter = new Intent(Intent.ACTION_VIEW);
+                twitter.setData(Uri.parse(Config.TWITTER_URL));
+                startActivity(twitter);
+
+                break;
+            case R.id.youtube:
+                Intent youtube = new Intent(Intent.ACTION_VIEW);
+                youtube.setData(Uri.parse(Config.YOUTUBE_URL));
+                startActivity(youtube);
+
+                break;
+            case R.id.soundcloud:
+                Intent soundcloud = new Intent(Intent.ACTION_VIEW);
+                soundcloud.setData(Uri.parse(Config.SOUNDCLOUD_URL));
+                startActivity(soundcloud);
+
+                break;
             default:
+
+                mDrawerLayout.closeDrawer(Gravity.RIGHT);
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra(MainActivity.MODE_KEY, MainActivity.CATEGORIES_MODE);
                 intent.putExtra(MainActivity.CATEGORY_KEY, categories.get(menuItem.getItemId()));
 
                 startActivity(intent);
-
 
         }
 
