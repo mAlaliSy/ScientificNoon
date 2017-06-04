@@ -107,7 +107,6 @@ public class FavoriteDataSource {
                 int count = cursor.getCount();
                 cursor.close();
 
-                Log.d("HHHHHHHHHHHHH", (count != 0) + " ");
 
                 return count != 0;
             }

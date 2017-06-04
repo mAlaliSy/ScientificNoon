@@ -3,6 +3,7 @@ package org.n_scientific.scientificnoon.data.pojo;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -62,8 +63,21 @@ public class Post implements Serializable {
         post.id = cursor.getInt(NoonSQLiteHelper.SQLiteContract.POST_ID_COLUMN_INDEX);
         post.title = new Title(cursor.getString(NoonSQLiteHelper.SQLiteContract.TITLE_COLUMN_INDEX));
         post.content = new Content(cursor.getString(NoonSQLiteHelper.SQLiteContract.CONTENT_COLUMN_INDEX));
-        post.link = cursor.getString(NoonSQLiteHelper.SQLiteContract.LINKE_COLUMN_INDEX);
+        post.link = cursor.getString(NoonSQLiteHelper.SQLiteContract.LINK_COLUMN_INDEX);
         post.date = cursor.getString(NoonSQLiteHelper.SQLiteContract.DATE_COLUMN_INDEX);
+
+        String cats = cursor.getString(NoonSQLiteHelper.SQLiteContract.CATEGORIES_COLUMN_INDEX);
+        post.categories = new Gson().fromJson(cats, int[].class);
+//
+//        String[] categoriesS = cats.split(",");
+//
+//        int[] categories = new int[categoriesS.length];
+//
+//        for (int i = 0; i < categories.length; i++) {
+//            categories[i] = Integer.valueOf(categoriesS[i]);
+//        }
+
+//        post.categories = categories;
 
         return post;
     }
@@ -75,6 +89,16 @@ public class Post implements Serializable {
         contentValues.put(NoonSQLiteHelper.SQLiteContract.CONTENT_COLUMN_NAME, content.getContent());
         contentValues.put(NoonSQLiteHelper.SQLiteContract.LINK_COLUMN_NAME, link);
         contentValues.put(NoonSQLiteHelper.SQLiteContract.DATE_COLUMN_NAME, date);
+
+//        StringBuilder builder = new StringBuilder("");
+//        for (int i = 0; i < categories.length; i++) {
+//            builder.append(categories[i]);
+//            if (i != categories.length - 1)
+//                builder.append(",");
+//        }
+//
+        contentValues.put(NoonSQLiteHelper.SQLiteContract.CATEGORIES_COLUMN_NAME, new Gson().toJson(categories));
+
         return contentValues;
     }
 
