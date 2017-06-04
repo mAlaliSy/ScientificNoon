@@ -33,10 +33,16 @@ public final class DateUtils {
     }
 
 
-    public static String formatDate(String date, String sourcePattern, String wantedPattern) {
-        return formatDate(parseDate(date, sourcePattern), wantedPattern);
+    public static String formatDate(String date, String sourcePattern, String desiredPattern) {
+        return formatDate(parseDate(date, sourcePattern), desiredPattern);
     }
 
 
+    public static String smartFormat(Date date, String desiredPatternNoYear, String desiredPattern) {
+        if (date.getYear() == new Date().getYear())
+            return formatDate(date, desiredPatternNoYear);
+        else
+            return formatDate(date, desiredPattern);
+    }
 
 }

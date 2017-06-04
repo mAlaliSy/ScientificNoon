@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
  * Created by mohammad on 29/05/17.
  */
 
-public abstract class BaseActivity extends AppCompatActivity implements Callbacks.ListCallback<Category>, NavigationView.OnNavigationItemSelectedListener {
+public abstract class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "BaseActivity";
     @Inject
@@ -74,7 +74,24 @@ public abstract class BaseActivity extends AppCompatActivity implements Callback
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        catRemoteDataSource.getCategories(this);
+        catRemoteDataSource.getCategories(new Callbacks.ListCallback<Category>() {
+
+            @Override
+            public void onLoaded(List<Category> results) {
+                categoriesProgressBar.setVisibility(View.GONE);
+
+                categories = results;
+                Menu menu = mNavigationView.getMenu();
+                for (int i = 0; i < categories.size(); i++) {
+                    menu.add(R.id.categoriesItems, i, Menu.NONE, categories.get(i).getName());
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(BaseActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
         mNavigationView.setNavigationItemSelectedListener(this);
@@ -88,30 +105,27 @@ public abstract class BaseActivity extends AppCompatActivity implements Callback
     public abstract void injectDependencies();
 
 
-    @Override
-    public void onLoaded(List<Category> results) {
-        categoriesProgressBar.setVisibility(View.GONE);
-
-        BaseActivity.this.categories = results;
-        Menu menu = mNavigationView.getMenu();
-        for (int i = 0; i < categories.size(); i++) {
-            menu.add(R.id.categoriesItems, i, Menu.NONE, categories.get(i).getName());
-        }
-    }
-
-    @Override
-    public void onError(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(MainActivity.MODE_KEY, MainActivity.CATEGORIES_MODE);
-        intent.putExtra(MainActivity.CATEGORY_KEY, categories.get(menuItem.getItemId()));
+        switch (menuItem.getItemId()) {
+            case R.id.settings:
 
-        startActivity(intent);
+                break;
+            case R.id.about:
+
+                break;
+            default:
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra(MainActivity.MODE_KEY, MainActivity.CATEGORIES_MODE);
+                intent.putExtra(MainActivity.CATEGORY_KEY, categories.get(menuItem.getItemId()));
+
+                startActivity(intent);
+
+
+        }
+
 
         return false;
     }

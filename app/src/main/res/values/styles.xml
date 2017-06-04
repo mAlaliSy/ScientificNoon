@@ -11,4 +11,8 @@
     <style name="TransparentStatusBar" parent="AppTheme">
     </style>
 
+    <style name="launchStyle" parent="TransparentStatusBar">
+        <item name="android:windowBackground">@drawable/launch_drawable</item>
+    </style>
+
 </resources>

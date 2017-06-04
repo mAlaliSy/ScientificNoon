@@ -13,7 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.main.MainActivity">
+
+        <activity
+            android:name=".ui.LaunchActivity"
+            android:theme="@style/launchStyle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,6 +24,12 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.main.MainActivity"
+            android:launchMode="singleTask">
+
+        </activity>
+        <activity
+            android:launchMode="singleTask"
             android:name=".ui.showarticle.ShowArticleActivity"
             android:screenOrientation="portrait"
             android:theme="@style/TransparentStatusBar" />

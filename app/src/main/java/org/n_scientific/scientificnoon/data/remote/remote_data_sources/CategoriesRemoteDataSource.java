@@ -5,14 +5,13 @@ import org.n_scientific.scientificnoon.data.CategoriesDataSource;
 import org.n_scientific.scientificnoon.data.pojo.Category;
 import org.n_scientific.scientificnoon.data.remote.services.CategoriesService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -23,9 +22,12 @@ public class CategoriesRemoteDataSource implements CategoriesDataSource {
 
     private CategoriesService categoriesService;
 
+    private List<Category> categories;
+
     @Inject
     public CategoriesRemoteDataSource(CategoriesService categoriesService) {
         this.categoriesService = categoriesService;
+        categories = new ArrayList<>();
     }
 
 
@@ -52,23 +54,38 @@ public class CategoriesRemoteDataSource implements CategoriesDataSource {
 
     @Override
     public void getCategory(int catId, final Callbacks.Callback<Category> callback) {
-        categoriesService.getCategory(catId).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Category>() {
-                    @Override
-                    public void onCompleted() {
-                    }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        callback.onError(e.getMessage());
-                    }
+        boolean found = false;
 
-                    @Override
-                    public void onNext(Category category) {
-                        callback.onLoaded(category);
-                    }
-                });
+        for (Category category : categories) {
+
+            if (category.getId() == catId) {
+                found = true;
+                callback.onLoaded(category);
+                break;
+            }
+
+        }
+
+        if (!found)
+            categoriesService.getCategory(catId).subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<Category>() {
+                        @Override
+                        public void onCompleted() {
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            callback.onError(e.getMessage());
+                        }
+
+                        @Override
+                        public void onNext(Category category) {
+                            callback.onLoaded(category);
+                            categories.add(category);
+                        }
+                    });
     }
 
     @Override

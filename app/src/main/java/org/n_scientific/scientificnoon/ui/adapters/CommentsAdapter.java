@@ -71,11 +71,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             commentHolder.comment.setText(Html.fromHtml(trimmed));
 
+
             Date date = DateUtils.parseDate(data.get(i).getDate().replace("T", "-"), Config.FETCHED_POST_COMMENT_DATE_PATTERN);
-            if (date.getYear() == new Date().getYear())
-                commentHolder.date.setText(DateUtils.formatDate(date, Config.POST_COMMENT_DATE_PATTERN_NO_YEAR));
-            else
-                commentHolder.date.setText(DateUtils.formatDate(date, Config.POST_COMMENT_DATE_PATTERN));
+
+            commentHolder.date.setText(DateUtils.smartFormat(date, Config.POST_COMMENT_DATE_PATTERN_NO_YEAR, Config.POST_COMMENT_DATE_PATTERN));
+
 
         }
 

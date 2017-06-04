@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true"
+    android:gravity="center"
+    android:padding="8dp"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
+    <ImageView
+        android:layout_width="128dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="100dp"
-        android:text="Header Place Holder"
-        android:textColor="@android:color/white" />
+        android:src="@drawable/logo" />
+
 </LinearLayout>
