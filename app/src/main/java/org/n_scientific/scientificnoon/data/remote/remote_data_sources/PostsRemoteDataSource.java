@@ -1,5 +1,7 @@
 package org.n_scientific.scientificnoon.data.remote.remote_data_sources;
 
+import android.util.Log;
+
 import org.n_scientific.scientificnoon.data.Callbacks;
 import org.n_scientific.scientificnoon.data.PostsDataSource;
 import org.n_scientific.scientificnoon.data.pojo.Post;
@@ -39,6 +41,7 @@ public class PostsRemoteDataSource implements PostsDataSource {
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e("TAG", "onError: ", e);
                         callback.onError(e.getMessage());
                     }
 
@@ -140,6 +143,5 @@ public class PostsRemoteDataSource implements PostsDataSource {
                     }
                 });
     }
-
 
 }

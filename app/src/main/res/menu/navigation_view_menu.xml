@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group
+        android:checkableBehavior="single"
         android:id="@+id/categoriesItems"
         android:orderInCategory="0">
 
@@ -11,10 +12,11 @@
     <group
         android:id="@+id/mainItems"
         android:orderInCategory="1">
+
         <item
-            android:id="@+id/settings"
-            android:icon="@drawable/ic_settings"
-            android:title="@string/settings" />
+            android:id="@+id/favorites"
+            android:icon="@drawable/ic_favorite_white_24dp"
+            android:title="@string/favorite" />
         <item
             android:id="@+id/about"
             android:icon="@drawable/ic_info"

@@ -24,7 +24,7 @@ public class SoundCloudInfo implements Serializable {
     }
 
     public String getImageUrl() {
-        return imageUrl;
+        return imageUrl.replace("-large", "-t500x500");
     }
 
     public void setImageUrl(String imageUrl) {

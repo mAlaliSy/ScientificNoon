@@ -1,7 +1,5 @@
 package org.n_scientific.scientificnoon.ui.main;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -13,7 +11,7 @@ import dagger.Provides;
 public class MainModule {
 
     @Provides
-    MainContract.Presenter providePresenter() {
+    MainPresenter providePresenter() {
         return new MainPresenter();
     }
 

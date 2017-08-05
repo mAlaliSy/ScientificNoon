@@ -47,7 +47,7 @@ public interface ShowArticleContract {
 
         void loadUser(int userId);
 
-        void parseContent(String content, LinearLayout contentContainer, ImageView postImage);
+        void parseContent(String content, LinearLayout contentContainer, ImageView postImage, boolean loadPostImage);
 
         void setFontSize(int fontSize);
 

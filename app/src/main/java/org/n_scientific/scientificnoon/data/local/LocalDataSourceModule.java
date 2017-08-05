@@ -10,11 +10,11 @@ import dagger.Provides;
  */
 
 @Module
-public class LocalDataSourceProvider {
+public class LocalDataSourceModule {
 
     private Context context;
 
-    public LocalDataSourceProvider(Context context) {
+    public LocalDataSourceModule(Context context) {
         this.context = context;
     }
 
@@ -23,5 +23,10 @@ public class LocalDataSourceProvider {
     @Provides
     public FavoriteDataSource provideFavoriteDataSource(){
         return new FavoriteDataSource(context);
+    }
+
+    @Provides
+    CategoriesLocalDataSource categoriesLocalDataSource() {
+        return new CategoriesLocalDataSource(context);
     }
 }

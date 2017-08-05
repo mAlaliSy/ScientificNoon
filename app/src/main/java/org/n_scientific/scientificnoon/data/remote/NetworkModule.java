@@ -50,10 +50,9 @@ public class NetworkModule {
             public Response intercept(Chain chain) throws IOException {
                 Response originalResponse = chain.proceed(chain.request());
                 if (Utils.isConnected(context)) {
-                    int maxAge = 60 * 60 * 24 * 28; // read from cache for 4-weeks
                     return originalResponse.newBuilder()
                             .removeHeader("Pragma")
-                            .header("Cache-Control", "public, max-age=" + maxAge)
+                            .header("Cache-Control", "public, max-age=" + 300)
                             .build();
                 } else {
                     int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
@@ -64,6 +63,7 @@ public class NetworkModule {
                 }
             }
         });
+
 
         return new Retrofit.Builder()
                 .client(clientBuilder.build())

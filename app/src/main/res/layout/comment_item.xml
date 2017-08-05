@@ -44,9 +44,11 @@
             android:layout_height="wrap_content"
             android:background="@drawable/comment_background"
             android:gravity="center_vertical"
-            android:padding="8dp"
-            android:textColor="#FF444444"
-            android:text="TextView" />
+            android:padding="16dp"
+            android:textIsSelectable="true"
+            android:textColor="#FF333333"
+            android:text="TextView"
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/txtDate"

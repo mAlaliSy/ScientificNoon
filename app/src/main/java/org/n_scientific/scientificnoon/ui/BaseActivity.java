@@ -10,26 +10,24 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import org.n_scientific.scientificnoon.Config;
-import org.n_scientific.scientificnoon.MyApplication;
+import org.n_scientific.scientificnoon.NoonApplication;
 import org.n_scientific.scientificnoon.R;
 import org.n_scientific.scientificnoon.data.Callbacks;
+import org.n_scientific.scientificnoon.data.local.CategoriesLocalDataSource;
 import org.n_scientific.scientificnoon.data.pojo.Category;
 import org.n_scientific.scientificnoon.data.remote.remote_data_sources.CategoriesRemoteDataSource;
-import org.n_scientific.scientificnoon.data.remote.remote_data_sources.PostsRemoteDataSource;
+import org.n_scientific.scientificnoon.ui.about.AboutActivity;
+import org.n_scientific.scientificnoon.ui.favorites.FavoritesActivity;
 import org.n_scientific.scientificnoon.ui.main.MainActivity;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,14 +36,15 @@ import butterknife.ButterKnife;
  * Created by mohammad on 29/05/17.
  */
 
-public abstract class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public abstract class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Callbacks.ListCallback<Category> {
 
     private static final String TAG = "BaseActivity";
-    @Inject
+
     protected CategoriesRemoteDataSource catRemoteDataSource;
 
-    @Inject
-    protected PostsRemoteDataSource postsRemoteDataSource;
+
+    protected CategoriesLocalDataSource categoriesLocalDataSource;
+
 
     @BindView(R.id.drawer_layout)
     protected DrawerLayout mDrawerLayout;
@@ -57,16 +56,19 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     protected Toolbar toolbar;
 
     @BindView(R.id.categoriesProgressBar)
-    ProgressBar categoriesProgressBar;
+    protected ProgressBar categoriesProgressBar;
 
     List<Category> categories;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
+    protected static int lastCategorySelectedId = -1;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((MyApplication) getApplication()).getRemoteDataSourceComponent().inject(this);
+        catRemoteDataSource = ((NoonApplication) getApplication()).getRemoteDataSourceComponent().getCatDataSource();
+        categoriesLocalDataSource = ((NoonApplication) getApplication()).getLocalDataSourceComponent().getCategoriesLocalDataSource();
         injectDependencies();
         setContentView(getContentResource());
 
@@ -78,28 +80,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        catRemoteDataSource.getCategories(new Callbacks.ListCallback<Category>() {
-
-            @Override
-            public void onLoaded(List<Category> results) {
-                categoriesProgressBar.setVisibility(View.GONE);
-
-                categories = results;
-                Menu menu = mNavigationView.getMenu();
-                for (int i = 0; i < categories.size(); i++) {
-                    menu.add(R.id.categoriesItems, i, Menu.NONE, categories.get(i).getName());
-                }
-            }
-
-            @Override
-            public void onError(String message) {
-                Toast.makeText(BaseActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
-
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
+        categoriesLocalDataSource.categoriesByParent(0, this);
 
     }
 
@@ -113,13 +97,19 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-
+        mDrawerLayout.closeDrawer(Gravity.RIGHT);
+        
         switch (menuItem.getItemId()) {
-            case R.id.settings:
+
+            case R.id.about:
+                if (!(this instanceof AboutActivity))
+                    startActivity(new Intent(this, AboutActivity.class));
 
                 break;
-            case R.id.about:
-
+            case R.id.favorites:
+                if (!(this instanceof FavoritesActivity)) {
+                    startActivity(new Intent(this, FavoritesActivity.class));
+                }
                 break;
             case R.id.twitter:
                 Intent twitter = new Intent(Intent.ACTION_VIEW);
@@ -140,17 +130,48 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
                 break;
             default:
+                Category category = categories.get(menuItem.getItemId());
+                if (!(this instanceof MainActivity && lastCategorySelectedId == category.getId())) {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra(MainActivity.MODE_KEY, MainActivity.CATEGORIES_MODE);
+                    intent.putExtra(MainActivity.CATEGORY_KEY, category);
+                    startActivity(intent);
 
-                mDrawerLayout.closeDrawer(Gravity.RIGHT);
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra(MainActivity.MODE_KEY, MainActivity.CATEGORIES_MODE);
-                intent.putExtra(MainActivity.CATEGORY_KEY, categories.get(menuItem.getItemId()));
-
-                startActivity(intent);
-
+                    if (this instanceof MainActivity && lastCategorySelectedId != -1)
+                        finish();
+                }
         }
 
 
         return false;
+    }
+
+    @Override
+    public void onLoaded(List<Category> results) {
+        if (results.size() == 0)
+            catRemoteDataSource.getCategoriesByParent(0, this);
+        else {
+            this.categories = results;
+            for (int i = 0; i < categories.size(); i++) {
+                if (categories.get(i).getId() == 1 || categories.get(i).getId() == 28)
+                    categories.remove(i);
+            }
+            fetchCategories();
+        }
+    }
+
+    private void fetchCategories() {
+        categoriesProgressBar.setVisibility(View.GONE);
+        Menu menu = mNavigationView.getMenu();
+        for (int i = 0; i < categories.size(); i++) {
+            menu.add(R.id.categoriesItems, i, Menu.NONE, categories.get(i).getName()).setCheckable(true).setChecked(false);
+        }
+
+    }
+
+
+    @Override
+    public void onError(String message) {
+
     }
 }

@@ -60,13 +60,13 @@ public class Post implements Serializable {
     public static Post fromCursor(Cursor cursor) {
         Post post = new Post();
 
-        post.id = cursor.getInt(NoonSQLiteHelper.SQLiteContract.POST_ID_COLUMN_INDEX);
-        post.title = new Title(cursor.getString(NoonSQLiteHelper.SQLiteContract.TITLE_COLUMN_INDEX));
-        post.content = new Content(cursor.getString(NoonSQLiteHelper.SQLiteContract.CONTENT_COLUMN_INDEX));
-        post.link = cursor.getString(NoonSQLiteHelper.SQLiteContract.LINK_COLUMN_INDEX);
-        post.date = cursor.getString(NoonSQLiteHelper.SQLiteContract.DATE_COLUMN_INDEX);
+        post.id = cursor.getInt(NoonSQLiteHelper.FavoriteContract.POST_ID_COLUMN_INDEX);
+        post.title = new Title(cursor.getString(NoonSQLiteHelper.FavoriteContract.TITLE_COLUMN_INDEX));
+        post.content = new Content(cursor.getString(NoonSQLiteHelper.FavoriteContract.CONTENT_COLUMN_INDEX));
+        post.link = cursor.getString(NoonSQLiteHelper.FavoriteContract.LINK_COLUMN_INDEX);
+        post.date = cursor.getString(NoonSQLiteHelper.FavoriteContract.DATE_COLUMN_INDEX);
 
-        String cats = cursor.getString(NoonSQLiteHelper.SQLiteContract.CATEGORIES_COLUMN_INDEX);
+        String cats = cursor.getString(NoonSQLiteHelper.FavoriteContract.CATEGORIES_COLUMN_INDEX);
         post.categories = new Gson().fromJson(cats, int[].class);
 //
 //        String[] categoriesS = cats.split(",");
@@ -84,11 +84,11 @@ public class Post implements Serializable {
 
     public ContentValues toContentValues() {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(NoonSQLiteHelper.SQLiteContract.POST_ID_COLUMN_NAME, id);
-        contentValues.put(NoonSQLiteHelper.SQLiteContract.TITLE_COLUMN_NAME, title.getTitle());
-        contentValues.put(NoonSQLiteHelper.SQLiteContract.CONTENT_COLUMN_NAME, content.getContent());
-        contentValues.put(NoonSQLiteHelper.SQLiteContract.LINK_COLUMN_NAME, link);
-        contentValues.put(NoonSQLiteHelper.SQLiteContract.DATE_COLUMN_NAME, date);
+        contentValues.put(NoonSQLiteHelper.FavoriteContract.POST_ID_COLUMN_NAME, id);
+        contentValues.put(NoonSQLiteHelper.FavoriteContract.TITLE_COLUMN_NAME, title.getTitle());
+        contentValues.put(NoonSQLiteHelper.FavoriteContract.CONTENT_COLUMN_NAME, content.getContent());
+        contentValues.put(NoonSQLiteHelper.FavoriteContract.LINK_COLUMN_NAME, link);
+        contentValues.put(NoonSQLiteHelper.FavoriteContract.DATE_COLUMN_NAME, date);
 
 //        StringBuilder builder = new StringBuilder("");
 //        for (int i = 0; i < categories.length; i++) {
@@ -97,7 +97,7 @@ public class Post implements Serializable {
 //                builder.append(",");
 //        }
 //
-        contentValues.put(NoonSQLiteHelper.SQLiteContract.CATEGORIES_COLUMN_NAME, new Gson().toJson(categories));
+        contentValues.put(NoonSQLiteHelper.FavoriteContract.CATEGORIES_COLUMN_NAME, new Gson().toJson(categories));
 
         return contentValues;
     }

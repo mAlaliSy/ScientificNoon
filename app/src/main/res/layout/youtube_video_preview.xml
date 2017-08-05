@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="256dp"
         android:scaleType="fitCenter"
-        android:tint="@color/overlay" />
+        android:tint="@color/overlay_40" />
 
     <android.support.v7.widget.AppCompatImageView
         android:layout_width="48dp"

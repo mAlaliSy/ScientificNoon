@@ -1,5 +1,7 @@
 package org.n_scientific.scientificnoon.utils;
 
+import android.util.Log;
+
 import org.n_scientific.scientificnoon.Config;
 
 /**
@@ -16,9 +18,13 @@ public final class ApisUtils {
     }
 
     public static String getSoundCloudId(String url) {
-        String id = url.split("tracks")[1];
-        id = id.substring(3, id.indexOf('&'));
-        return id;
+        String[] split = url.split("tracks");
+        if (split.length > 1) {
+            String id = split[1];
+            id = id.substring(3, id.indexOf('&'));
+            return id;
+        } else
+            return null;
     }
 
     public static String getYoutubeVideoKey(String url) {

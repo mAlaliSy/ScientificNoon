@@ -1,7 +1,12 @@
 package org.n_scientific.scientificnoon.data.pojo;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import org.n_scientific.scientificnoon.data.local.NoonSQLiteHelper;
 
 import java.io.Serializable;
 
@@ -39,6 +44,23 @@ public class Category implements Serializable{
         this.description = description;
         this.name = name;
         this.parent = parent;
+    }
+
+    public static Category fromCursor(Cursor cursor) {
+        Category category = new Category();
+        category.setId(cursor.getInt(NoonSQLiteHelper.CategoriesContract.ID_INDEX));
+        category.setName(cursor.getString(NoonSQLiteHelper.CategoriesContract.NAME_INDEX));
+        category.setParent(cursor.getInt(NoonSQLiteHelper.CategoriesContract.PARENT_ID_INDEX));
+        return category;
+    }
+
+    public ContentValues toContentValues() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NoonSQLiteHelper.CategoriesContract.ID_COLUMN_NAME, id);
+        contentValues.put(NoonSQLiteHelper.CategoriesContract.NAME_COLUMN, name);
+        contentValues.put(NoonSQLiteHelper.CategoriesContract.PARENT_ID_COLUMN, parent);
+
+        return contentValues;
     }
 
     public int getId() {

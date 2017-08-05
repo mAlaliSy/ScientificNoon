@@ -19,11 +19,6 @@ import dagger.Component;
 @Singleton
 @Component(modules = RemoteDataSourceModule.class)
 public interface RemoteDataSourceComponent {
-
-
-    void inject(BaseActivity baseActivity);
-
-
     CategoriesRemoteDataSource getCatDataSource();
 
     CommentsRemoteDataSource getComDataSource();

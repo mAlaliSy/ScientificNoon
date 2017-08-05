@@ -30,7 +30,6 @@ public final class PostsUtils {
 
         if (images.size() != 0) {
             callback.onLoaded(images.first().attr("src"));
-            return;
         } else {
             Elements iframes = element.getElementsByTag("iframe");
 
@@ -40,7 +39,6 @@ public final class PostsUtils {
                 if (src.contains("youtube")) {
                     String key = ApisUtils.getYoutubeVideoKey(src);
                     callback.onLoaded(ApisUtils.getYoutubeThumbnail(key));
-                    return;
                 } else if (src.contains("soundcloud")) {
                     soundCloudService
                             .getSoundCloudTrack(ApisUtils.getSoundCloudId(src))
@@ -59,14 +57,14 @@ public final class PostsUtils {
                         @Override
                         public void onNext(SoundCloudInfo soundCloudInfo) {
                             callback.onLoaded(soundCloudInfo.getImageUrl());
-                            return;
                         }
                     });
-                }
+                }else
+                    callback.onLoaded(null);
+
             }
 
         }
-        callback.onLoaded(null);
 
     }
 

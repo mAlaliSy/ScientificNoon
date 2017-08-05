@@ -48,6 +48,7 @@ public class CategoriesRemoteDataSource implements CategoriesDataSource {
                     @Override
                     public void onNext(List<Category> categories) {
                         callback.onLoaded(categories);
+                        CategoriesRemoteDataSource.this.categories = categories;
                     }
                 });
     }

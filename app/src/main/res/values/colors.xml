@@ -1,12 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6a1b9a</color>
-    <color name="colorPrimaryDark">#38006B</color>
+    <color name="colorPrimary">#4C2569</color>
+    <color name="colorPrimaryDark">#2f0450</color>
     <color name="colorAccent">#FFA000</color>
 
     <color name="colorAccentDark">#f57c00</color>
 
-    <color name="overlay">#65000000</color>
-    <color name="comment_background">#eaeaea</color>
+
+    <color name="overlay_40">#40000000</color>
+    <color name="overlay_80">#80000000</color>
+    <color name="comment_background">#ececec</color>
     <color name="dividerColor">#30000000</color>
+    <color name="gray_dark">#616161</color>
+
+    <color name="red_accent_200">#ff5252</color>
+    <color name="material_red_900">#b71c1c</color>
+
+    <color name="green_accent_700">#00c853</color>
+    <color name="material_green_900">#1b5e20</color>
+
+
+    <color name="light_blue_accent_400">#00b0ff</color>
+    <color name="material_blue_900">#01579b</color>
+
+    <array name="colors">
+        <item>#f44336</item>
+        <item>#00c853</item>
+        <item>#00bcd4</item>
+        <item>#ff5722</item>
+        <item>#673ab7</item>
+        <item>#e91e63</item>
+    </array>
+
 </resources>

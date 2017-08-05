@@ -19,18 +19,27 @@ public class User implements Serializable {
     @Expose
     private String name;
 
-    @SerializedName("name")
+    @SerializedName("description")
     @Expose
     private String description;
+
+    @SerializedName("avatar_url")
+    private String avatarUrl;
+
+    @SerializedName("link")
+    @Expose
+    private String link;
 
 
     public User() {
     }
 
-    public User(int id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
     public int getId() {
@@ -55,5 +64,13 @@ public class User implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

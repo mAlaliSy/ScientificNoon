@@ -2,7 +2,7 @@ package org.n_scientific.scientificnoon.ui.showarticle;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.ContextCompat;
+import android.graphics.Bitmap;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
@@ -28,6 +27,7 @@ import org.n_scientific.scientificnoon.contentparser.Text;
 import org.n_scientific.scientificnoon.contentparser.YoutubeVideo;
 import org.n_scientific.scientificnoon.data.Callbacks;
 import org.n_scientific.scientificnoon.data.SettingsManager;
+import org.n_scientific.scientificnoon.data.local.CategoriesLocalDataSource;
 import org.n_scientific.scientificnoon.data.local.FavoriteDataSource;
 import org.n_scientific.scientificnoon.data.pojo.Category;
 import org.n_scientific.scientificnoon.data.pojo.Comment;
@@ -63,7 +63,6 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
 
     private List<Category> categories;
 
-    private List<AudioPlayer> audioPlayers;
 
     private Context context;
 
@@ -71,6 +70,9 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
 
     @Inject
     CategoriesRemoteDataSource categoriesRemoteDataSource;
+
+    @Inject
+    CategoriesLocalDataSource categoriesLocalDataSource;
 
     @Inject
     UsersRemoteDataSource usersRemoteDataSource;
@@ -84,12 +86,22 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
     @Inject
     FavoriteDataSource favoriteDataSource;
 
+//    HashSet<String> downloadedImages;
+//
+//    public ShowArticlePresenter() {
+//        downloadedImages = new HashSet<>();
+//    }
+
+    ArrayList<String> imagesUrls;
+
     @Override
     public void setView(ShowArticleContract.View view) {
         this.view = view;
         view.getComponent().inject(this);
         context = view.getActivity();
         settingsManager = SettingsManager.getInstance(context);
+        imagesUrls = new ArrayList<>();
+
     }
 
     @Override
@@ -97,23 +109,27 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
 
         categories = new ArrayList<>();
 
-        for (int id : catsIds) {
+        for (final int id : catsIds) {
 
-            categoriesRemoteDataSource.getCategory(id, new Callbacks.Callback<Category>() {
+            categoriesLocalDataSource.getCategory(id, new Callbacks.Callback<Category>() {
                 @Override
                 public void onLoaded(Category result) {
-                    categories.add(result);
+                    if (result == null) {
+                        categoriesRemoteDataSource.getCategory(id, this);
+                    } else {
+                        categories.add(result);
 
-                    if (categories.size() == catsIds.length) {
-                        Collections.sort(categories, new Comparator<Category>() {
-                            @Override
-                            public int compare(Category o1, Category o2) {
-                                if (o1.getParent() == 0)
-                                    return -1;
-                                return 1;
-                            }
-                        });
-                        view.categoriesLoaded(categories);
+                        if (categories.size() == catsIds.length) {
+                            Collections.sort(categories, new Comparator<Category>() {
+                                @Override
+                                public int compare(Category o1, Category o2) {
+                                    if (o1.getParent() == 0)
+                                        return -1;
+                                    return 1;
+                                }
+                            });
+                            view.categoriesLoaded(categories);
+                        }
                     }
                 }
 
@@ -161,7 +177,7 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
 
 
     @Override
-    public void parseContent(String html, LinearLayout contentContainer, final ImageView postImage) {
+    public void parseContent(String html, LinearLayout contentContainer, final ImageView postImage, final boolean loadPostImage) {
 
         ContentParser parser = new ContentParser(html);
 
@@ -174,40 +190,49 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
                 , ViewGroup.LayoutParams.WRAP_CONTENT);
         params.bottomMargin = params.topMargin = 0;
 
-        final RequestListener<String, GlideDrawable> postImageListener = new RequestListener<String, GlideDrawable>() {
+        final RequestListener<String, Bitmap> postImageListener = new RequestListener<String, Bitmap>() {
             @Override
-            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+            public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
                 return false;
             }
 
             @Override
-            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                postImage.setColorFilter(ResourcesUtils.getColor(context, R.color.overlay));
+            public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                postImage.setColorFilter(ResourcesUtils.getColor(context, R.color.overlay_40));
                 postImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
                 return false;
             }
         };
 
         for (final PostContent c : postContent) {
             if (c instanceof Image) {
+
                 String src = ((Image) c).getSrc();
+
+                imagesUrls.add(src);
+
                 if (firstImage) {
-                    loadImage(postImage, ((Image) c).getSrc(), postImageListener);
-                    setImageClickListener(postImage, ((Image) c).getSrc());
                     firstImage = false;
+                    if (loadPostImage) {
+                        loadImage(postImage, src, R.drawable.logo_white, postImageListener);
+                    }
+
+                    setImageClickListener(postImage, src);
                 } else {
                     ImageView imageView = new ImageView(contentContainer.getContext());
                     imageView.setLayoutParams(params);
                     imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-                    loadImage(imageView, ((Image) c).getSrc(), null);
-                    setImageClickListener(imageView, ((Image) c).getSrc());
+                    loadImage(imageView, src, R.drawable.ic_image, null);
+                    setImageClickListener(imageView, src);
 
                     contentContainer.addView(imageView);
                 }
             } else if (c instanceof Text) {
                 NoonTextView textView = new NoonTextView(context);
                 textView.setLayoutParams(params);
+                textView.setTextIsSelectable(true);
                 textView.setMovementMethod(LinkMovementMethod.getInstance());
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, settingsManager.getFontSize());
                 textView.setLineSpacing(0, 1.5f);
@@ -222,7 +247,7 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
                 contentContainer.addView(frameLayout);
 
                 ImageView imageView = (ImageView) frameLayout.findViewById(R.id.image);
-                loadImage(imageView, ApisUtils.getYoutubeThumbnail(((YoutubeVideo) c).getSrc()), null);
+                loadImage(imageView, ApisUtils.getYoutubeThumbnail(((YoutubeVideo) c).getSrc()), R.drawable.logo_white, null);
 
                 frameLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -238,21 +263,18 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
 
                 AudioPlayer audioPlayer = new AudioPlayer(context, url, contentContainer);
 
-                if (audioPlayers == null)
-                    audioPlayers = new ArrayList<>();
-
-                audioPlayers.add(audioPlayer);
-
                 contentContainer.addView(audioPlayer.getView());
 
             }
         }
 
-        if (firstImage) { // No Image found in the post..
+        if (firstImage && postImage != null) { // No Image found in the post..
             for (final PostContent content : postContent) {
                 if (content instanceof YoutubeVideo) {
                     String imgUrl = ApisUtils.getYoutubeThumbnail(((YoutubeVideo) content).getSrc());
-                    loadImage(postImage, imgUrl, postImageListener);
+                    imagesUrls.add(imgUrl);
+                    if (loadPostImage)
+                        loadImage(postImage, imgUrl, R.drawable.logo_white, postImageListener);
                     setImageClickListener(postImage, imgUrl);
                     break;
                 } else if (content instanceof SoundCloudTrack) {
@@ -271,7 +293,9 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
 
                                 @Override
                                 public void onNext(SoundCloudInfo soundCloudInfo) {
-                                    loadImage(postImage, soundCloudInfo.getImageUrl(), postImageListener);
+                                    if (loadPostImage)
+                                        loadImage(postImage, soundCloudInfo.getImageUrl(), R.drawable.logo_white, postImageListener);
+                                    imagesUrls.add(soundCloudInfo.getImageUrl());
                                     setImageClickListener(postImage, soundCloudInfo.getImageUrl());
                                 }
                             });
@@ -317,21 +341,38 @@ public class ShowArticlePresenter implements ShowArticleContract.Presenter {
     }
 
 
-    private void loadImage(ImageView imageView, final String url, RequestListener<String, GlideDrawable> listener) {
+    private void loadImage(ImageView imageView, final String url, int placeHolderId, final RequestListener<String, Bitmap> listener) {
+
         Glide.with(context)
                 .load(url)
-                .error(ContextCompat.getDrawable(context, R.drawable.ic_broken_image))
-                .placeholder(ContextCompat.getDrawable(context, R.drawable.ic_image))
-                .listener(listener)
+                .asBitmap()
+                .placeholder(placeHolderId)
+                .listener(new RequestListener<String, Bitmap>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        if (listener != null)
+                            listener.onResourceReady(resource, model, target, isFromMemoryCache, isFirstResource);
+//                        downloadedImages.add(url);
+
+                        return false;
+                    }
+                })
                 .into(imageView);
     }
 
-    private void setImageClickListener(ImageView imageView, final String url) {
+    private void setImageClickListener(final ImageView imageView, final String url) {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ImageViewerActivity.class);
-                intent.putExtra(ImageViewerActivity.IMAGE_URL, url);
+
+                intent.putExtra(ImageViewerActivity.IMAGES_URLS, imagesUrls);
+                intent.putExtra(ImageViewerActivity.IMAGE_INDEX, imagesUrls.indexOf(url));
                 context.startActivity(intent);
             }
         });

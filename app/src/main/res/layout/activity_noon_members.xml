@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="org.n_scientific.scientificnoon.ui.main.MainActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:elevation="@dimen/app_bar_elevation"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="org.n_scientific.scientificnoon.ui.noon_members.NoonMembersActivity">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/users"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </LinearLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/header_view"
+        app:menu="@menu/navigation_view_menu">
+
+        <ProgressBar
+            android:id="@+id/categoriesProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </android.support.design.widget.NavigationView>
+
+</android.support.v4.widget.DrawerLayout>
+

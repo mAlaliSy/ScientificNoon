@@ -16,7 +16,7 @@ import rx.Observable;
 public interface UsersService {
 
     @GET("users")
-    Observable<List<User>> getUsers(@Query("page") int page, @Query("per_page") int perPage);
+    Observable<List<User>> getUsers(@Query("page") int page, @Query("per_page") int perPage, @Query("orderby") String orderBy, @Query("exclude") String exclude);
 
     @GET("users/{id}")
     Observable<User> getUser(@Path("id") int userId);

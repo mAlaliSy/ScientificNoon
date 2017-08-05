@@ -2,7 +2,6 @@ package org.n_scientific.scientificnoon.data.local;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 import org.n_scientific.scientificnoon.data.Callbacks;
 import org.n_scientific.scientificnoon.data.pojo.Post;
@@ -34,7 +33,7 @@ public class FavoriteDataSource {
         Observable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                sqLiteHelper.getWritableDatabase().insert(NoonSQLiteHelper.SQLiteContract.FAVORITES_TABLE_NAME, null, post.toContentValues());
+                sqLiteHelper.getWritableDatabase().insert(NoonSQLiteHelper.FavoriteContract.TABLE_NAME, null, post.toContentValues());
                 return null;
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
@@ -48,7 +47,7 @@ public class FavoriteDataSource {
             public List<Post> call() throws Exception {
 
 
-                Cursor cursor = sqLiteHelper.getWritableDatabase().query(NoonSQLiteHelper.SQLiteContract.FAVORITES_TABLE_NAME, null, null, null, null, null, null);
+                Cursor cursor = sqLiteHelper.getWritableDatabase().query(NoonSQLiteHelper.FavoriteContract.TABLE_NAME, null, null, null, null, null, null);
 
 
                 List<Post> posts = new ArrayList<>(cursor.getCount());
@@ -86,7 +85,7 @@ public class FavoriteDataSource {
         Observable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                sqLiteHelper.getWritableDatabase().delete(NoonSQLiteHelper.SQLiteContract.FAVORITES_TABLE_NAME, NoonSQLiteHelper.SQLiteContract.POST_ID_COLUMN_NAME + " = ?", new String[]{String.valueOf(postId)});
+                sqLiteHelper.getWritableDatabase().delete(NoonSQLiteHelper.FavoriteContract.TABLE_NAME, NoonSQLiteHelper.FavoriteContract.POST_ID_COLUMN_NAME + " = ?", new String[]{String.valueOf(postId)});
                 return null;
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
@@ -100,8 +99,8 @@ public class FavoriteDataSource {
 
 
                 Cursor cursor = sqLiteHelper.getWritableDatabase()
-                        .query(NoonSQLiteHelper.SQLiteContract.FAVORITES_TABLE_NAME, null,
-                                NoonSQLiteHelper.SQLiteContract.POST_ID_COLUMN_NAME + "=?",
+                        .query(NoonSQLiteHelper.FavoriteContract.TABLE_NAME, null,
+                                NoonSQLiteHelper.FavoriteContract.POST_ID_COLUMN_NAME + "=?",
                                 new String[]{String.valueOf(postId)}, null, null, null);
 
                 int count = cursor.getCount();

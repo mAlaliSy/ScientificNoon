@@ -3,6 +3,7 @@ package org.n_scientific.scientificnoon.utils;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.ColorRes;
+import android.util.TypedValue;
 
 /**
  * Created by mohammad on 02/06/17.
@@ -16,6 +17,11 @@ public class ResourcesUtils {
         } else {
             return context.getResources().getColor(resId);
         }
+    }
+
+
+    public static int dpToPx(int dp, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
 

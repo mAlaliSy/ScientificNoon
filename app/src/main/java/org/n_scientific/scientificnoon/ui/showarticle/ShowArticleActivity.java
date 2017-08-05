@@ -2,17 +2,24 @@ package org.n_scientific.scientificnoon.ui.showarticle;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,19 +30,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.n_scientific.scientificnoon.Config;
-import org.n_scientific.scientificnoon.MyApplication;
+import org.n_scientific.scientificnoon.NoonApplication;
 import org.n_scientific.scientificnoon.R;
 import org.n_scientific.scientificnoon.data.pojo.Category;
 import org.n_scientific.scientificnoon.data.pojo.Comment;
 import org.n_scientific.scientificnoon.data.pojo.Post;
 import org.n_scientific.scientificnoon.data.pojo.User;
 import org.n_scientific.scientificnoon.data.remote.DaggerSoundCloudComponent;
-import org.n_scientific.scientificnoon.data.remote.remote_data_sources.CategoriesRemoteDataSource;
-import org.n_scientific.scientificnoon.data.remote.remote_data_sources.UsersRemoteDataSource;
 import org.n_scientific.scientificnoon.ui.adapters.CategoriesAdapter;
 import org.n_scientific.scientificnoon.ui.adapters.CommentsAdapter;
 import org.n_scientific.scientificnoon.ui.views.NoonTextView;
 import org.n_scientific.scientificnoon.utils.DateUtils;
+import org.n_scientific.scientificnoon.utils.ResourcesUtils;
+import org.n_scientific.scientificnoon.utils.Utils;
+import org.n_scientific.scientificnoon.utils.ViewsUtils;
 
 import java.util.List;
 
@@ -43,18 +51,26 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 
 public class ShowArticleActivity extends AppCompatActivity implements ShowArticleContract.View, View.OnClickListener {
 
 
     public static final String POST_INTENT_KEY = "post";
+
+
     private static final String TAG = "ShowArticleActivity";
+    public static final String TRANSITION_NAME = "transition_name";
+
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
     @BindView(R.id.collapsingToolbarLayout)
     CollapsingToolbarLayout collapsingToolbarLayout;
+
+    @BindView(R.id.nestedScrollView)
+    NestedScrollView nestedScrollView;
 
     @BindView(R.id.postTitle)
     TextView postTitle;
@@ -105,39 +121,52 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
     @Inject
     ShowArticleContract.Presenter presenter;
 
-    @Inject
-    CategoriesRemoteDataSource categoriesRemoteDataSource;
 
-    @Inject
-    UsersRemoteDataSource usersRemoteDataSource;
-
+    public static Bitmap bitmap; // Avoid passing it by intents
 
     Post post;
     User user;
 
-    private List<Category> categories;
     private List<Comment> comments;
     private int page = 1;
 
     private int fontSize;
 
     Menu menu;
+    private boolean commentsDownloading;
+    private CommentsAdapter commentsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            Transition explode = new Explode();
+            explode.excludeTarget(R.id.appBar, true);
+
+            getWindow().setEnterTransition(explode);
+
+            Fade fade = new Fade();
+            fade.excludeTarget(R.id.cardView, true);
+
+            getWindow().setReturnTransition(fade);
+            getWindow().setExitTransition(fade);
+
+        }
         setContentView(R.layout.activity_show_article);
         ButterKnife.bind(this);
+
 
         setSupportActionBar(toolbar);
 
 
         showArticleComponent = DaggerShowArticleComponent
                 .builder()
-                .remoteDataSourceComponent(((MyApplication) getApplication())
+                .remoteDataSourceComponent(((NoonApplication) getApplication())
                         .getRemoteDataSourceComponent())
                 .soundCloudComponent(DaggerSoundCloudComponent.builder().build())
-                .localDataSourceComponent(((MyApplication) getApplication())
+                .localDataSourceComponent(((NoonApplication) getApplication())
                         .getLocalDataSourceComponent())
                 .build();
 
@@ -145,6 +174,8 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
 
         presenter.setView(this);
 
+
+        ViewCompat.setNestedScrollingEnabled(content, false);
 
         collapsingToolbarLayout.setExpandedTitleColor(0x000000);
 
@@ -154,7 +185,20 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
 
         presenter.loadCategories(post.getCategories());
 
-        presenter.parseContent(post.getContent().getContent(), content, postImage);
+
+        if (bitmap != null) {
+            presenter.parseContent(post.getContent().getContent(), content, postImage, false);
+
+            postImage.setImageBitmap(bitmap);
+//            postImage.setOnClickListener(this);
+            postImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            postImage.setColorFilter(ResourcesUtils.getColor(this, R.color.overlay_40));
+            ViewCompat.setTransitionName(postImage, getIntent().getStringExtra(TRANSITION_NAME));
+
+
+            supportStartPostponedEnterTransition();
+        } else
+            presenter.parseContent(post.getContent().getContent(), content, postImage, true);
 
         presenter.loadComments(post.getId(), page);
 
@@ -170,6 +214,7 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
 
         share.setOnClickListener(this);
 
+        commentsDownloading = false;
 
     }
 
@@ -186,8 +231,13 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
 
     @Override
     public void showErrorMessage(String message) {
-        Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG)
-                .show();
+        if (!Utils.isConnected(this)) {
+            ViewsUtils.getInfoSnackBar(coordinatorLayout, getString(R.string.no_internet_connection_message)).show();
+
+            categoriesProgressBar.setVisibility(View.GONE);
+            commentsProgress.setVisibility(View.GONE);
+        } else
+            ViewsUtils.getErrorSnackBar(coordinatorLayout, message).show();
     }
 
     @Override
@@ -210,8 +260,6 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
 
     @Override
     public void categoriesLoaded(List<Category> categories) {
-        this.categories = categories;
-
         categoriesProgressBar.setVisibility(View.GONE);
 
 
@@ -223,17 +271,19 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
 
     @Override
     public void commentsLoaded(List<Comment> comments) {
+        commentsDownloading = false;
         if (commentsFirstLoading) {
             if (comments.size() == 0) {
                 noComments.setVisibility(View.VISIBLE);
                 commentsProgress.setVisibility(View.GONE);
                 return;
             }
-            CommentsAdapter commentsAdapter = new CommentsAdapter(this, comments);
+            commentsAdapter = new CommentsAdapter(this, comments);
             final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
+
             commentsRecyclerView.setLayoutManager(layoutManager);
-            commentsRecyclerView.setAdapter(commentsAdapter);
+            commentsRecyclerView.setAdapter(new SlideInBottomAnimationAdapter(commentsAdapter));
 
             commentsRecyclerView.setVisibility(View.VISIBLE);
             commentsProgress.setVisibility(View.GONE);
@@ -244,21 +294,23 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
-                    if (layoutManager.findLastVisibleItemPosition() == ShowArticleActivity.this.comments.size()) {
+                    if (layoutManager.findLastVisibleItemPosition() == ShowArticleActivity.this.comments.size() && !commentsAdapter.isAllLoaded()) {
                         page++;
                         presenter.loadComments(post.getId(), page);
+                        commentsDownloading = true;
                     }
 
 
                 }
             });
 
+
             commentsFirstLoading = false;
         } else {
             this.comments.addAll(comments);
             commentsRecyclerView.getAdapter().notifyDataSetChanged();
-            if (comments.size() == 0)
-                ((CommentsAdapter) commentsRecyclerView.getAdapter()).setAllLoaded(true);
+            if (comments.size() < Config.DEFAULT_COMMENTS_PER_CALL)
+                commentsAdapter.setAllLoaded(true);
         }
     }
 
@@ -337,6 +389,20 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
 
                 break;
 
+//            case R.id.postImage:
+//                ImageViewerActivity.bitmap = bitmap;
+//
+//                Intent intent = new Intent(this, ImageViewerActivity.class);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, postImage, "postImage");
+//                    intent.putExtra(ImageViewerActivity.TRANSITION_NAME, "postImage");
+//
+//                    startActivity(intent, options.toBundle());
+//                } else {
+//                    startActivity(intent);
+//                }
+//
+//                break;
         }
     }
 

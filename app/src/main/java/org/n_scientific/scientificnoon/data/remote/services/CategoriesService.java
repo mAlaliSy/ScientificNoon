@@ -15,7 +15,7 @@ import rx.Observable;
 
 public interface CategoriesService {
 
-    @GET("categories?parent=0&per_page=100&orderby=id&exclude=1,28")
+    @GET("categories?per_page=100&orderby=id&exclude=1,28")
     Observable<List<Category>> getCategories();
 
     @GET("categories/{id}")

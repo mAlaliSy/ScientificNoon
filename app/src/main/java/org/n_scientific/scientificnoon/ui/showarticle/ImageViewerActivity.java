@@ -1,24 +1,30 @@
 package org.n_scientific.scientificnoon.ui.showarticle;
 
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.bumptech.glide.Glide;
-
 import org.n_scientific.scientificnoon.R;
+import org.n_scientific.scientificnoon.ui.adapters.ImagesPagerAdapter;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import uk.co.senab.photoview.PhotoView;
 
 public class ImageViewerActivity extends AppCompatActivity {
 
-    public static final String IMAGE_URL = "image_url";
+    public static final String IMAGES_URLS = "image_url";
+    public static final String IMAGE_INDEX = "image_index";
 
-    @BindView(R.id.photoView)
-    PhotoView photoView;
+
+    @BindView(R.id.imagesPager)
+    ViewPager imagesPager;
+
+    ArrayList<String> imagesUrls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,13 +36,24 @@ public class ImageViewerActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        String imgUrl = getIntent().getStringExtra(IMAGE_URL);
 
-        Glide.with(this).load(imgUrl)
-                .placeholder(R.drawable.ic_image)
-                .error(R.drawable.ic_broken_image)
-                .fitCenter()
-                .into(photoView);
+        ArrayList<String> imgUrls = getIntent().getStringArrayListExtra(IMAGES_URLS);
+        imagesUrls = new ArrayList<>(imgUrls.size());
+
+        for (String s : imgUrls) {
+            String imgUrl = s.replaceAll("-(\\d){2,}x(\\d){2,}", ""); // Remove resize part -If there is- from URL
+            imagesUrls.add(imgUrl);
+
+            Log.d("TAG", "Befor : " + s + "\t After : " + imgUrl);
+        }
+
+
+        ImagesPagerAdapter imagesPagerAdapter = new ImagesPagerAdapter(getSupportFragmentManager(), imagesUrls);
+
+        imagesPager.setAdapter(imagesPagerAdapter);
+
+        imagesPager.setCurrentItem(getIntent().getIntExtra(IMAGE_INDEX, 0));
 
     }
+
 }

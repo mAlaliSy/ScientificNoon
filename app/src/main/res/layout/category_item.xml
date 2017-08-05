@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     style="@style/Widget.AppCompat.Button.Small"
     android:layout_margin="8dp"
-    android:background="@drawable/category_background"
+    android:background="@drawable/rounded_accent"
     android:minHeight="0dp"
     android:minWidth="0dp"
     android:paddingBottom="6dp"

@@ -6,14 +6,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".MyApplication"
+        android:name=".NoonApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".ui.LaunchActivity"
             android:theme="@style/launchStyle">
@@ -25,16 +24,23 @@
         </activity>
         <activity
             android:name=".ui.main.MainActivity"
-            android:launchMode="singleTask">
-
-        </activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
-            android:launchMode="singleTask"
             android:name=".ui.showarticle.ShowArticleActivity"
             android:screenOrientation="portrait"
             android:theme="@style/TransparentStatusBar" />
         <activity android:name=".ui.showarticle.YoutubePlayerActivity" />
-        <activity android:name=".ui.showarticle.ImageViewerActivity"></activity>
+        <activity android:name=".ui.showarticle.ImageViewerActivity" />
+        <activity
+            android:name=".ui.favorites.FavoritesActivity"
+            android:label="@string/favorite" />
+        <activity
+            android:name=".ui.about.AboutActivity"
+            android:label="@string/whoAreWe" />
+        <activity
+            android:name=".ui.noon_members.NoonMembersActivity"
+            android:label="@string/noon_members" />
+        <activity android:name=".ui.posts_list.PostsListActivity" />
     </application>
 
 </manifest>

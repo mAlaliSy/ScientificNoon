@@ -28,5 +28,7 @@ public class LaunchActivity extends AppCompatActivity {
         getResources().updateConfiguration(configuration, null);
 
         startActivity(new Intent(this, MainActivity.class));
+
+        finish();
     }
 }

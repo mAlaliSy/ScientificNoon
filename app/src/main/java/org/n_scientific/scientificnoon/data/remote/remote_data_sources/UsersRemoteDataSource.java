@@ -28,7 +28,7 @@ public class UsersRemoteDataSource implements UsersDataSource {
 
     @Override
     public void getUsers(int usersPerPage, int page, final Callbacks.ListCallback<User> callback) {
-        usersService.getUsers(page, usersPerPage)
+        usersService.getUsers(page, usersPerPage, "id", "1, 214")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<User>>() {
