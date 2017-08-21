@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import org.n_scientific.scientificnoon.ui.main.MainActivity;
+import org.n_scientific.scientificnoon.utils.ResourcesUtils;
 
 import java.util.Locale;
 
@@ -20,12 +21,8 @@ public class LaunchActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Change the language to Arabic => Use RTL instead of LTR..
-        Locale locale = new Locale("ar");
-        Locale.setDefault(locale);
-        Configuration configuration = new Configuration();
-        configuration.locale = locale;
-        getResources().updateConfiguration(configuration, null);
+
+        ResourcesUtils.changeLanguageToArabic(this);
 
         startActivity(new Intent(this, MainActivity.class));
 

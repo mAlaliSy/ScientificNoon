@@ -218,6 +218,11 @@ public class ShowArticleActivity extends AppCompatActivity implements ShowArticl
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ResourcesUtils.changeLanguageToArabic(this);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

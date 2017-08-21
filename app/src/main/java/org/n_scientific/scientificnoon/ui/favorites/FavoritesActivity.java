@@ -86,7 +86,7 @@ public class FavoritesActivity extends BaseActivity implements FavoritesContract
             PostsAdapter postsAdapter = new PostsAdapter(this, favorites
                     , ((NoonApplication) getApplication()).getRemoteDataSourceComponent().getCatDataSource()
                     , ((NoonApplication) getApplication()).getLocalDataSourceComponent().getCategoriesLocalDataSource()
-                    , DaggerSoundCloudComponent.builder().soundCloudModule(new SoundCloudModule()).build().getSoundCloudService(), false);
+                    , DaggerSoundCloudComponent.builder().soundCloudModule(new SoundCloudModule()).build().getSoundCloudService(), false, false, null);
             postsAdapter.setAllDownloaded(true);
 
             postsRecyclerView.setLayoutManager(new LinearLayoutManager(this));

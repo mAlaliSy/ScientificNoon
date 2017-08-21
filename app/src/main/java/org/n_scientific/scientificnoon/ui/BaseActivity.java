@@ -26,6 +26,7 @@ import org.n_scientific.scientificnoon.data.remote.remote_data_sources.Categorie
 import org.n_scientific.scientificnoon.ui.about.AboutActivity;
 import org.n_scientific.scientificnoon.ui.favorites.FavoritesActivity;
 import org.n_scientific.scientificnoon.ui.main.MainActivity;
+import org.n_scientific.scientificnoon.utils.ResourcesUtils;
 
 import java.util.List;
 
@@ -67,6 +68,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         catRemoteDataSource = ((NoonApplication) getApplication()).getRemoteDataSourceComponent().getCatDataSource();
         categoriesLocalDataSource = ((NoonApplication) getApplication()).getLocalDataSourceComponent().getCategoriesLocalDataSource();
         injectDependencies();
@@ -87,6 +89,12 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ResourcesUtils.changeLanguageToArabic(this);
+    }
 
     public abstract int getContentResource();
 
@@ -137,7 +145,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
                     intent.putExtra(MainActivity.CATEGORY_KEY, category);
                     startActivity(intent);
 
-                    if (this instanceof MainActivity && lastCategorySelectedId != -1)
+                    if (this instanceof MainActivity && lastCategorySelectedId != -1 || this instanceof FavoritesActivity)
                         finish();
                 }
         }

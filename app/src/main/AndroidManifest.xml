@@ -15,7 +15,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.LaunchActivity"
-            android:theme="@style/launchStyle">
+            android:theme="@style/launchStyle"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,7 +25,8 @@
         </activity>
         <activity
             android:name=".ui.main.MainActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.showarticle.ShowArticleActivity"
             android:screenOrientation="portrait"
@@ -32,15 +34,18 @@
         <activity android:name=".ui.showarticle.YoutubePlayerActivity" />
         <activity android:name=".ui.showarticle.ImageViewerActivity" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.favorites.FavoritesActivity"
             android:label="@string/favorite" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.about.AboutActivity"
             android:label="@string/whoAreWe" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.noon_members.NoonMembersActivity"
             android:label="@string/noon_members" />
-        <activity android:name=".ui.posts_list.PostsListActivity" />
+
     </application>
 
 </manifest>

@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -16,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
@@ -47,6 +49,8 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int POST_TYPE = 0;
     private static final int LOADING_TYPE = 1;
     private static final int LOAD_MORE_TYPE = 2;
+    private static final int CATEGORIES_TYPE = 3;
+    private static final int NO_POSTS_TYPE = 4;
 
 
     private Context context;
@@ -60,8 +64,11 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     List<Category> categories;
 
+    private boolean showSubCategories;
 
-    public PostsAdapter(Context context, List<Post> posts, CategoriesRemoteDataSource categoriesRemoteDataSource, CategoriesLocalDataSource categoriesLocalDataSource, SoundCloudService soundCloudService, boolean loadMoreEnabled) {
+    private List<Category> subcategories;
+
+    public PostsAdapter(Context context, List<Post> posts, CategoriesRemoteDataSource categoriesRemoteDataSource, CategoriesLocalDataSource categoriesLocalDataSource, SoundCloudService soundCloudService, boolean loadMoreEnabled, boolean showSubCategories, List<Category> subcategories) {
         this.context = context;
         this.data = posts;
         this.categoriesRemoteDataSource = categoriesRemoteDataSource;
@@ -70,6 +77,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.loadMoreEnabled = loadMoreEnabled;
 
         categoriesLocalDataSource.getCategories(this);
+
+        this.subcategories = subcategories;
+        this.showSubCategories = showSubCategories;
 
     }
 
@@ -93,6 +103,14 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 View view = LayoutInflater.from(context).inflate(R.layout.load_more_item, viewGroup, false);
                 return new LoadMoreViewHolder(view);
             }
+            case CATEGORIES_TYPE: {
+                View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item, viewGroup, false);
+                return new CategoriesViewHolder(view);
+            }
+            case NO_POSTS_TYPE: {
+                View view = LayoutInflater.from(context).inflate(R.layout.no_posts_item, viewGroup, false);
+                return new NoPostsViewHolder(view);
+            }
             default: {
                 View view = LayoutInflater.from(context).inflate(R.layout.post_item, viewGroup, false);
                 return new PostViewHolder(view);
@@ -108,7 +126,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             final PostViewHolder postViewHolder = (PostViewHolder) viewHolder;
 
-            final Post post = data.get(position);
+            int pos = position - (showSubCategories && subcategories != null && subcategories.size() != 0 ? 1 : 0);
+
+            final Post post = data.get(pos);
 
             postViewHolder.txtTitle.setText(Html.fromHtml(post.getTitle().getTitle()));
 
@@ -131,40 +151,41 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             postViewHolder.txtDate.setText(DateUtils.smartFormat(date, Config.POST_COMMENT_DATE_PATTERN_NO_YEAR, Config.POST_COMMENT_DATE_PATTERN));
 
 
-//            postViewHolder.image = null;
+            postViewHolder.image = null;
 
             postViewHolder.postImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             postViewHolder.postImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.logo_white));
             PostsUtils.getPostImage(post.getContent().getContent(), soundCloudService, new Callbacks.Callback<String>() {
                 @Override
                 public void onLoaded(String result) {
-//                    postViewHolder.image = null;
+                    postViewHolder.image = null;
 
                     Glide.with(context).load(result)
-//                            .asBitmap()
+                            .asBitmap()
                             .placeholder(R.drawable.logo_white)
-//                            .listener(new RequestListener<String, Bitmap>() {
-//                                @Override
-//                                public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
-//                                    return false;
-//                                }
-//
-//                                @Override
-//                                public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
-//
-//                                    postViewHolder.image = resource;
-//                                    postViewHolder.postImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                                    return false;
-//                                }
-//                            })
-                            .listener(new RequestListener<String, GlideDrawable>() {
+                            .listener(new RequestListener<String, Bitmap>() {
                                 @Override
-                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
                                     return false;
                                 }
 
                                 @Override
-                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+
+                                    postViewHolder.image = resource;
+                                    postViewHolder.postImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                                    return false;
+                                }
+                            })
+                            .listener(new RequestListener<String, Bitmap>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    postViewHolder.image = resource;
                                     postViewHolder.postImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                                     return false;
                                 }
@@ -178,6 +199,14 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     postViewHolder.postImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_broken_image));
                 }
             });
+
+        } else if (viewHolder instanceof CategoriesViewHolder) {
+
+            CategoriesViewHolder categoriesViewHolder = (CategoriesViewHolder) viewHolder;
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+            categoriesViewHolder.recyclerView.setLayoutManager(linearLayoutManager);
+            categoriesViewHolder.recyclerView.setAdapter(new CategoriesAdapter(context, subcategories));
 
         }
 
@@ -193,17 +222,27 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return data.size() + (!allDownloaded || loadMoreEnabled ? 1 : 0);
+        int count = data.size();
+        if (showSubCategories && subcategories != null && subcategories.size() != 0)
+            count++;
+        if (!allDownloaded || loadMoreEnabled)
+            count++;
+        if (data.size() == 0)
+            count++;
+        return count;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == data.size()) {
-            if (loadMoreEnabled)
+        if (position == getItemCount() - 1 && loadMoreEnabled && data.size() != 0) {
                 return LOAD_MORE_TYPE;
-            else
-                return LOADING_TYPE;
-        } else {
+        } else if (position == getItemCount() - 1 && !allDownloaded && data.size() != 0) {
+            return LOADING_TYPE;
+        } else if (position == 0 && showSubCategories && subcategories != null && subcategories.size() != 0)
+            return CATEGORIES_TYPE;
+        else if (data.size() == 0)
+            return NO_POSTS_TYPE;
+        else {
             return POST_TYPE;
         }
     }
@@ -241,7 +280,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @BindView(R.id.txtDate)
         TextView txtDate;
 
-        //        Bitmap image;
+        Bitmap image;
         public PostViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -251,28 +290,29 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         @Override
         public void onClick(View v) {
+            int position = getAdapterPosition() - (showSubCategories && subcategories != null && subcategories.size() != 0 ? 1 : 0);
             Intent intent = new Intent(context, ShowArticleActivity.class);
-            intent.putExtra(ShowArticleActivity.POST_INTENT_KEY, data.get(getAdapterPosition()));
-//            if (image != null) {
-//                ShowArticleActivity.bitmap = image;
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                            ((Activity) context),
-//                            postImage, String.valueOf(getAdapterPosition()));
-//                    intent.putExtra(ShowArticleActivity.TRANSITION_NAME, String.valueOf(getAdapterPosition()));
-//
-//                    context.startActivity(intent, options.toBundle());
-//                } else {
-//                    context.startActivity(intent);
-//                }
-//            } else {
+            intent.putExtra(ShowArticleActivity.POST_INTENT_KEY, data.get(position));
+            if (image != null) {
+                ShowArticleActivity.bitmap = image;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            ((Activity) context),
+                            postImage, String.valueOf(position));
+                    intent.putExtra(ShowArticleActivity.TRANSITION_NAME, String.valueOf(position));
+
+                    context.startActivity(intent, options.toBundle());
+                } else {
+                    context.startActivity(intent);
+                }
+            } else {
             ShowArticleActivity.bitmap = null;
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 context.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(((Activity) context)).toBundle());
             } else
                 context.startActivity(intent);
-//            }
+            }
         }
     }
 
@@ -289,5 +329,24 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
+
+    private class CategoriesViewHolder extends RecyclerView.ViewHolder {
+
+        RecyclerView recyclerView;
+
+        public CategoriesViewHolder(View view) {
+            super(view);
+            recyclerView = (RecyclerView) view;
+        }
+
+    }
+
+
+    private class NoPostsViewHolder extends RecyclerView.ViewHolder {
+
+        public NoPostsViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
 
 }

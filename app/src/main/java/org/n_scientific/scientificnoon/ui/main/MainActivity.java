@@ -27,9 +27,7 @@ import org.n_scientific.scientificnoon.data.pojo.User;
 import org.n_scientific.scientificnoon.data.remote.DaggerSoundCloudComponent;
 import org.n_scientific.scientificnoon.data.remote.SoundCloudModule;
 import org.n_scientific.scientificnoon.ui.BaseActivity;
-import org.n_scientific.scientificnoon.ui.adapters.CategoriesAdapter;
 import org.n_scientific.scientificnoon.ui.adapters.PostsAdapter;
-import org.n_scientific.scientificnoon.ui.posts_list.PostsListActivity;
 import org.n_scientific.scientificnoon.utils.AnimUtils;
 import org.n_scientific.scientificnoon.utils.ResourcesUtils;
 import org.n_scientific.scientificnoon.utils.Utils;
@@ -44,7 +42,7 @@ import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 
-public class MainActivity extends BaseActivity implements MainContract.View, SearchView.OnQueryTextListener, MenuItemCompat.OnActionExpandListener, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
+public class MainActivity extends BaseActivity implements MainContract.View, SearchView.OnQueryTextListener, MenuItemCompat.OnActionExpandListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "MainActivity";
 
@@ -71,19 +69,15 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
     @BindView(R.id.swipeToRefresh)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    //    @BindView(R.id.nestedScrollView)
-//    NestedScrollView nestedScrollView;
     @BindView(R.id.postsRecyclerView)
     RecyclerView postsRecyclerView;
-    @BindView(R.id.categoriesRecyclerView)
-    RecyclerView categoriesRecyclerView;
+
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
-    @BindView(R.id.txtNoPosts)
-    TextView txtNoPosts;
 
-    @BindView(R.id.txtCategoryName)
-    TextView txtCategoryName;
+
+
+
 
     @BindView(R.id.noConnectionMessage)
     ViewGroup noConnectionMessage;
@@ -98,6 +92,11 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
     private boolean downloading;
 
     private Category category;
+    private List<Category> subcategories;
+
+    private boolean subcategoriesLoaded = false;
+    private boolean postsLoaded = false;
+
     private User user;
     private String searchQuery;
     private MenuItem searchViewItem;
@@ -117,30 +116,30 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
         postsRecyclerView.setItemAnimator(new SlideInUpAnimator());
 
         swipeRefreshLayout.setOnRefreshListener(this);
-        init(true);
+        init();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        init(true);
+        init();
     }
 
-    private void init(boolean animate) {
+    private void init() {
 
         page = 1;
         posts = null;
         downloading = false;
         swipeRefreshLayout.setRefreshing(false); // If it is already refreshing, stop it..
 
-        txtNoPosts.setVisibility(View.GONE);
+        postsLoaded = false;
+        subcategoriesLoaded = false;
+
         progressBar.setVisibility(View.VISIBLE);
         postsRecyclerView.setVisibility(View.GONE);
-        categoriesRecyclerView.setVisibility(View.GONE);
         noConnectionMessage.setVisibility(View.GONE);
 
-        txtCategoryName.setVisibility(View.GONE);
 
         Bundle options = getIntent().getExtras();
 
@@ -154,7 +153,6 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
                 category = (Category) options.getSerializable(CATEGORY_KEY);
                 presenter.loadCategories(category.getId());
                 setTitle(category.getName());
-                txtCategoryName.setVisibility(View.VISIBLE);
 
                 lastCategorySelectedId = category.getId();
 
@@ -193,50 +191,35 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
     }
 
 
-    private void initRecyclerView(List<Post> results) {
+    private void initRecyclerView() {
 
-        posts = results;
-        postsAdapter = new PostsAdapter(this, posts, catRemoteDataSource, categoriesLocalDataSource, DaggerSoundCloudComponent.builder().soundCloudModule(new SoundCloudModule()).build().getSoundCloudService(), mode != SEARCH_MODE);
-        postsAdapter.setLoadMoreClickListener(this);
+
+        postsAdapter = new PostsAdapter(this, posts, catRemoteDataSource, categoriesLocalDataSource, DaggerSoundCloudComponent.builder().soundCloudModule(new SoundCloudModule()).build().getSoundCloudService(), false, mode == CATEGORIES_MODE, subcategories);
+
 
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         postsRecyclerView.setLayoutManager(layoutManager);
 
-//        ViewCompat.setNestedScrollingEnabled(postsRecyclerView, false);
+        if (posts.size() < Config.DEFAULT_POSTS_PER_CALL)
+            postsAdapter.setAllDownloaded(true);
+
         postsRecyclerView.setAdapter(postsAdapter);
 
-        if (mode == SEARCH_MODE) {
-//            nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-//                @Override
-//                public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-//                    // Grab the last child placed in the ScrollView, we need it to determinate the bottom position.
-//                    View view = v.getChildAt(0);
-//                    // Calculate the scrolldiff
-//                    int diff = view.getBottom() - (v.getHeight() + v.getScrollY()) - progressBar.getHeight() - 48;
-//                    // if diff is zero, then the bottom has been reached
-//                    if (diff < 0 && !downloading && !postsAdapter.isAllDownloaded()) {
-//                        downloading = true;
-//                        page++;
-//                        loadPosts();
-//                    }
-//                }
-//            });
+        postsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (layoutManager.findLastVisibleItemPosition() == posts.size() - 1 && !downloading && !postsAdapter.isAllDownloaded()) {
+                    downloading = true;
+                    page++;
+                    loadPosts();
+                }
+            }
+        });
 
 
-            if (results.size() < Config.DEFAULT_POSTS_PER_CALL)
-                postsAdapter.setAllDownloaded(true);
-        } else {
-//            nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-//                @Override
-//                public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-//
-//                }
-//            });
-
-            postsAdapter.setAllDownloaded(true);
-        }
-
+        progressBar.setVisibility(View.GONE);
         postsRecyclerView.setVisibility(View.VISIBLE);
 
     }
@@ -260,41 +243,44 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
     @Override
     public void onPostsLoaded(List<Post> results) {
         downloading = false;
+
+        postsLoaded = true;
+
+        swipeRefreshLayout.setRefreshing(false);
+
         if (posts == null) {
-            progressBar.setVisibility(View.GONE);
-            if (results.size() == 0) {
-                txtNoPosts.setVisibility(View.VISIBLE);
 
-            } else
-                initRecyclerView(results);
-            swipeRefreshLayout.setRefreshing(false);
+            posts = results;
+
+            if (subcategoriesLoaded || mode != CATEGORIES_MODE) {
+                initRecyclerView();
+            }
         } else {
-            if (results.size() < Config.DEFAULT_POSTS_PER_CALL)
-                postsAdapter.setAllDownloaded(true);
-
             posts.addAll(results);
             postsAdapter.notifyDataSetChanged();
+            if (results.size() < Config.DEFAULT_POSTS_PER_CALL)
+                postsAdapter.setAllDownloaded(true);
         }
+
     }
+
 
     @Override
     public void onCategoriesLoaded(List<Category> categories) {
-        if (categories.size() != 0) {
-            CategoriesAdapter categoriesAdapter = new CategoriesAdapter(this, categories);
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-            categoriesRecyclerView.setLayoutManager(linearLayoutManager);
-            categoriesRecyclerView.setAdapter(categoriesAdapter);
-            AnimUtils.slideDown(categoriesRecyclerView, 400);
-            categoriesRecyclerView.setVisibility(View.VISIBLE);
-        }
+        subcategories = categories;
+
+        subcategoriesLoaded = true;
+
+        if (postsLoaded)
+            initRecyclerView();
     }
 
     @Override
     public void showErrorMessage(String message) {
         if (!Utils.isConnected(this)) {
             swipeRefreshLayout.setRefreshing(false);
+            postsRecyclerView.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
-            categoriesProgressBar.setVisibility(View.GONE);
             if (posts == null) { //No Posts, No internet connection => Show no connection error message
                 noConnectionMessage.animate().alpha(1).setListener(null); // Remove Old Listeners
                 noConnectionMessage.setVisibility(View.VISIBLE);
@@ -328,7 +314,6 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
         posts = null;
 
         postsRecyclerView.setVisibility(View.GONE);
-        txtNoPosts.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
         searchView.clearFocus();
@@ -345,7 +330,7 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
     public void onBackPressed() {
         if (searchViewItem.isActionViewExpanded()) {
             searchViewItem.collapseActionView();
-            init(false);
+            init();
         } else {
             super.onBackPressed();
         }
@@ -353,10 +338,6 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
 
     @Override
     public boolean onMenuItemActionExpand(MenuItem item) {
-        categoriesRecyclerView.setVisibility(View.GONE);
-        txtCategoryName.setVisibility(View.GONE);
-        txtNoPosts.setVisibility(View.GONE);
-        txtCategoryName.setVisibility(View.GONE);
         postsRecyclerView.setVisibility(View.GONE);
 
         return true;
@@ -364,7 +345,7 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
 
     @Override
     public boolean onMenuItemActionCollapse(MenuItem item) {
-        init(false);
+        init();
         return true;
     }
 
@@ -377,19 +358,6 @@ public class MainActivity extends BaseActivity implements MainContract.View, Sea
             posts = null;
             noConnectionMessage.setVisibility(View.GONE);
             loadPosts();
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnLoadMore:
-                Intent intent = new Intent(this, PostsListActivity.class);
-                intent.putExtra(PostsListActivity.MODE_KEY, mode);
-                if (mode == CATEGORIES_MODE)
-                    intent.putExtra(PostsListActivity.CATEGORY_KEY, category);
-                startActivity(intent);
-                break;
         }
     }
 }
