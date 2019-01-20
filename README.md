@@ -1,5 +1,5 @@
 # ScientificNoon
-The Android application for Scientific Noon Group.
+The Android application for [Scientific Noon Group](http://n-scientific.org/).
 
 The app is available on [Google Play](https://play.google.com/store/apps/details?id=org.n_scientific.scientificnoon)
 
