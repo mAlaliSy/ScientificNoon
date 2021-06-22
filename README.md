@@ -7,7 +7,7 @@ The app is available on [Google Play](https://play.google.com/store/apps/details
   * MVP Architecture. 
   * Dagger2 for Dependency Injection. 
   * RxJava for reactive programming.
-  * Retrofit for HTTP connections.
+  * Retrofit for API calls.
   * jsoup for HTML parsing. 
   * Material Design with Animation.
   * WP REST API.
